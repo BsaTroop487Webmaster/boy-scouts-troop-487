@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSA sketch game | Troop 487</title>
+    <style>
+        :root {
+            --bsa-blue: #003F87;
+            --bsa-green: #1E6432;
+            --bsa-brown: #5F3924;
+            --block-dark: #111111;
+            --paper: #f4f4f0;
+            --accent: #CE1126; /* Scouting Red */
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--paper);
+            color: var(--block-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 { color: var(--bsa-blue); margin-bottom: 10px; }
+        
+        /* Main Interface Layout */
+        .game-container {
+            display: grid;
+            grid-template-columns: 320px 280px;
+            gap: 24px;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        /* Canvas Styling */
+        .canvas-wrapper {
+            position: relative;
+            border: 4px solid var(--bsa-blue);
+            border-radius: 4px;
+            cursor: crosshair;
+        }
+
+        canvas { display: block; background: white; }
+
+        /* Controls & Feedback */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .palette {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .swatch {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .swatch.active { transform: scale(1.2); border-color: var(--block-dark); }
+
+        .btn {
+            background: var(--bsa-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #002d62; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        
+        /* Training UI */
+        .prediction-box {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 5px solid var(--bsa-green);
+        }
+
+        .confidence-meter {
+            height: 6px;
+            background: #eee;
+            margin-top: 8px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: var(--bsa-green);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #training-modal {
+            display: none;
+            background: rgba(255,240,240, 0.5);
+            border: 1px solid var(--accent);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        select { padding: 8px; width: 100%; border-radius: 4px; border: 1px solid #ccc; margin-bottom: 8px;}
+
+    </style>
+</head>
+<body>
+
+    <h1>BSA Pattern Matcher v1.0</h1>
+    <p>Draw a standard Scouting item. The system learns from corrections.</p>
+
+    <div class="game-container">
+        <!-- Left: Drawing Area -->
+        <div>
+            <div class="palette">
+                <div class="swatch active" style="background:var(--bsa-blue)" onclick="setColor('#003F87', this)"></div>
+                <div class="swatch" style="background:var(--bsa-green)" onclick="setColor('#1E6432', this)"></div>
+                <div class="swatch" style="background:var(--bsa-brown)" onclick="setColor('#5F3924', this)"></div>
+                <div class="swatch" style="background:var(--block-dark)" onclick="setColor('#111111', this)"></div>
+            </div>
+            
+            <div class="canvas-wrapper">
+                <canvas id="mainCanvas" width="300" height="300"></canvas>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button class="btn btn-secondary" onclick="clearCanvas()">Clear Pad</button>
+                <button class="btn" style="flex-grow:1" onclick="evaluateDrawing()">Evaluate</button>
+            </div>
+        </div>
+
+        <!-- Right: Brain & Controls -->
+        <div class="controls">
+            <div class="prediction-box" id="resultBox">
+                <h3 style="margin:0 0 8px 0">Prediction</h3>
+                <div id="predictionText" style="font-size: 1.4rem; font-weight:bold;">...</div>
+                <div class="confidence-meter"><div id="confidenceFill" class="confidence-fill"></div></div>
+                <div id="confidenceVal" style="font-size:0.8rem; color:#666; margin-top:4px;">0% Match</div>
+            </div>
+
+            <div id="feedbackSection" style="display:none;">
+                <p>Was this correct?</p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn" style="background:var(--bsa-green); flex:1" onclick="confirmPrediction()">Yes</button>
+                    <button class="btn" style="background:var(--accent); flex:1" onclick="showCorrectionUI()">No</button>
+                </div>
+            </div>
+
+            <div id="training-modal">
+                <label><b>Teach the AI:</b> What was this?</label>
+                <select id="labelSelector"></select>
+                <button class="btn" onclick="trainModel()">Update Weights</button>
+            </div>
+            
+            <div style="margin-top:auto; font-size:0.8rem; color:#888; text-align:center;">
+                Weights saved to LocalStorage<br>
+                <button onclick="resetBrain()" style="border:none; background:none; text-decoration:underline; color:#888; cursor:pointer;">Reset Brain</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* --- CONFIGURATION & CONSTANTS --- */
+        const GRID_SIZE = 20; // Downsample resolution (20x20 = 400 inputs)
+        const CANVAS_SIZE = 300;
+        const STORAGE_KEY = 'bsa_neural_weights_v2';
+        
+        // The 10-Item Vocabulary List (Mapped to indices 0-9)
+        const VOCABULARY = [
+            "Fleur-de-lis", "Pocket Knife", "Tent", "Compass", 
+            "Merit Badge", "Neckerchief", "Campfire", "Pine Tree", 
+            "Lantern", "Canoe"
+        ];
+
+        // 15 Internal References (Extra slots for variations/synonyms mapped to same vocab)
+        // For this simple version, we map 1:1 for the first 10, extras are unused reserves.
+        
+        /* --- STATE MANAGEMENT --- */
+        let isDrawing = false;
+        let currentColor = '#003F87';
+        let lastPrediction = null;
+        let ctx, canvas;
+
+        // The "Brain": Weight matrix [ClassIndex][InputIndex] and Biases [ClassIndex]
+        let brain = {
+            weights: [], 
+            biases: []
+        };
+
+        /* --- INITIALIZATION --- */
+        window.onload = function() {
+            canvas = document.getElementById('mainCanvas');
+            ctx = canvas.getContext('2d', { willReadFrequently: true });
+            
+            // Setup Drawing Events
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('mouseleave', endDraw);
+            // Touch support
+            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e.touches[0]); });
+            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
+            canvas.addEventListener('touchend', endDraw);
+
+            // Populate Selector
+            const selector = document.getElementById('labelSelector');
+            VOCABULARY.forEach((item, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.innerText = item;
+                selector.appendChild(opt);
+            });
+
+            loadBrain();
+        };
+
+        /* --- NEURAL CORE --- */
+        function initBrain() {
+            brain.weights = [];
+            brain.biases = [];
+            
+            // Initialize random small weights for 10 classes x 400 inputs
+            for (let c = 0; c < VOCABULARY.length; c++) {
+                let classWeights = new Float32Array(GRID_SIZE * GRID_SIZE);
+                for (let i = 0; i < classWeights.length; i++) {
+                    classWeights[i] = (Math.random() - 0.5) * 0.1;
+                }
+                brain.weights.push(classWeights);
+                brain.biases.push(0);
+            }
+            saveBrain();
+        }
+
+        function loadBrain() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                // Hydrate arrays from JSON object
+                brain.weights = parsed.weights.map(w => Object.values(w)); // Convert back to array if needed
+                brain.biases = parsed.biases;
+                console.log("Brain loaded from LocalStorage");
+            } else {
+                initBrain();
+                console.log("New Brain initialized");
+            }
+        }
+
+        function saveBrain() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(brain));
+        }
+
+        function resetBrain() {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+
+        /* --- INPUT PROCESSING (VECTORIZATION) --- */
+        function getCanvasVector() {
+            // 1. Create temporary hidden canvas for downsampling
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = GRID_SIZE;
+            tempCanvas.height = GRID_SIZE;
+            const tCtx = tempCanvas.getContext('2d');
+
+            // 2. Draw main canvas into small grid
+            tCtx.drawImage(canvas, 0, 0, GRID_SIZE, GRID_SIZE);
+            
+            // 3. Extract pixel data
+            const imgData = tCtx.getImageData(0, 0, GRID_SIZE, GRID_SIZE);
+            const vector = new Float32Array(GRID_SIZE * GRID_SIZE);
+
+            // 4. Convert to Grayscale & Normalize (0.0 - 1.0)
+            for (let i = 0; i < vector.length; i++) {
+                // Alpha channel check (is pixel drawn?)
+                const alpha = imgData.data[i * 4 + 3]; 
+                // We treat any drawn pixel as "active" input
+                vector[i] = alpha > 0 ? 1.0 : 0.0;
+            }
+            return vector;
+        }
+
+        /* --- INFERENCE ENGINE --- */
+        function evaluateDrawing() {
+            const inputVector = getCanvasVector();
+            let maxScore = -Infinity;
+            let predictedIndex = -1;
+
+            // Compute Dot Product for each class
+            for (let c = 0; c < VOCABULARY.length; c++) {
+                let score = brain.biases[c];
+                for (let i = 0; i < inputVector.length; i++) {
+                    if(inputVector[i] > 0) {
+                        score += brain.weights[c][i];
+                    }
+                }
+                
+                if (score > maxScore) {
+                    maxScore = score;
+                    predictedIndex = c;
+                }
+            }
+
+            // Display Results
+            lastPrediction = { index: predictedIndex, input: inputVector };
+            const label = VOCABULARY[predictedIndex];
+            const confidence = Math.min(Math.max((maxScore + 5) * 10, 10), 100); // Rough sigmoid approx for UI
+
+            document.getElementById('predictionText').innerText = label;
+            document.getElementById('confidenceFill').style.width = confidence + '%';
+            document.getElementById('confidenceVal').innerText = Math.floor(confidence) + '% Match';
+            
+            // Show Feedback Controls
+            document.getElementById('feedbackSection').style.display = 'block';
+            document.getElementById('training-modal').style.display = 'none';
+        }
+
+        /* --- LEARNING LOOP (PERCEPTRON UPDATE) --- */
+        function confirmPrediction() {
+            // Reinforce the correct prediction slightly
+            trainStep(lastPrediction.index, lastPrediction.input, 0.05); // Small reward
+            showToast("Learned!");
+            clearUI();
+        }
+
+        function showCorrectionUI() {
+            document.getElementById('training-modal').style.display = 'block';
+            document.getElementById('feedbackSection').style.display = 'none';
+        }
+
+        function trainModel() {
+            const correctIndex = parseInt(document.getElementById('labelSelector').value);
+            const wrongIndex = lastPrediction.index;
+            const inputs = lastPrediction.input;
+
+            // 1. Boost the correct class (Reinforcement)
+            trainStep(correctIndex, inputs, 0.2);
+
+            // 2. Suppress the wrong class (Inhibition)
+            if (wrongIndex !== -1 && wrongIndex !== correctIndex) {
+                trainStep(wrongIndex, inputs, -0.1);
+            }
+
+            saveBrain();
+            showToast(`Updated: Now recognizes ${VOCABULARY[correctIndex]}`);
+            clearUI();
+        }
+
+        // Hebbian-style weight update
+        function trainStep(classIdx, inputs, rate) {
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i] > 0) { // Only update active connections
+                    brain.weights[classIdx][i] += rate;
+                }
+            }
+            brain.biases[classIdx] += rate;
+        }
+
+        /* --- UTILITIES --- */
+        function setColor(hex, el) {
+            currentColor = hex;
+            document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function startDraw(e) {
+            isDrawing = true;
+            ctx.beginPath();
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.targetTouches[0].clientX) - rect.left;
+            const y = (e.clientY || e.targetTouches[0].clientY) - rect.top;
+            ctx.moveTo(x, y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.targetTouches[0].clientX) - rect.left;
+            const y = (e.clientY || e.targetTouches[0].clientY) - rect.top;
+            
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = currentColor;
+            
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function endDraw() { isDrawing = false; }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+            document.getElementById('feedbackSection').style.display = 'none';
+            document.getElementById('training-modal').style.display = 'none';
+            document.getElementById('predictionText').innerText = "...";
+            document.getElementById('confidenceFill').style.width = '0%';
+        }
+
+        function clearUI() {
+            setTimeout(() => {
+                clearCanvas();
+            }, 1000);
+        }
+
+        function showToast(msg) {
+            const btn = document.querySelector('.btn'); // Quick visual feedback on button
+            const original = btn.innerText;
+            btn.innerText = msg;
+            setTimeout(() => btn.innerText = original, 1500);
+        }
+    </script>
+<!-- Add this code at the very end of your HTML file, right before the closing </body> tag -->
+<a href="../index.html" style="
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    background: linear-gradient(135deg, #003F87 0%, #006B3F 100%);
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 9999;
+">Back to Hub</a>
+</body>
+</html>
