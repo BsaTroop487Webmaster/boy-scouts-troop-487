@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>BSA Troop 487 | Official Public Portal</title>
+    <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bsa-green: #2e442d;
+            --bsa-khaki: #d2c8b6;
+            --bsa-red: #c61021;
+            --bsa-blue: #003366;
+            --bsa-tan: #f5edd6;
+            --wood: #513829;
+            --gold: #e6b800;
+            --sidebar-l-w: 260px;
+            --sidebar-r-w: 240px;
+            --shadow: 0 8px 20px rgba(0,0,0,0.15);
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        body {
+            background-color: var(--bsa-khaki);
+            background-image: radial-gradient(var(--bsa-tan) 1.5px, transparent 0);
+            background-size: 24px 20px; color: #222;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            display: flex; min-height: 100vh; overflow-x: hidden;
+        }
+        /* Modal Overlay - Darkens the background */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+/* Toggle Class to show modal */
+.modal-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Modal Content Box */
+.modal-box {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.modal-box h3 {
+  margin-top: 0;
+  color: #333333;
+}
+
+.modal-box p {
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* Buttons Container */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333333;
+}
+
+.btn-primary {
+  background: #003366; /* Scout blue theme accent */
+  color: #ffffff;
+}
+
+        /* OVERLAYS, NOTIFICATIONS & POPUPS */
+        #legal-compliance-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(20, 26, 19, 0.98); z-index: 2000000;
+            display: flex; align-items: center; justify-content: center; padding: 15px;
+        }
+
+        .legal-shield-box {
+            background: var(--bsa-tan); border: 4px solid var(--wood);
+
+            border-radius: 12px; padding: 30px; width: 100%; max-width: 500px; box-shadow: var(--shadow);
+        }
+
+        .legal-scroll-frame {
+            background: white; border: 1px solid #bbb; height: 140px;
+            overflow-y: auto; padding: 15px; margin: 15px 0; font-size: 0.85rem; line-height: 1.5; border-radius: 6px;
+        }
+
+        #site-update-banner {
+            position: fixed; top: 0; left: 0; width: 100vw; background: var(--bsa-red);
+            color: white; padding: 10px; text-align: center; font-weight: bold;
+            z-index: 1000000; display: none; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        #watched-status-indicator {
+            position: fixed; top: 15px; right: 15px; background: var(--wood);
+            border: 2px solid var(--gold); padding: 8px 15px; color: white;
+            border-radius: 20px; display: none; align-items: center; z-index: 99999;
+            font-size: 0.8rem; font-weight: bold; box-shadow: var(--shadow);
+
+        }
+
+        /* CUSTOM MODAL NOTIFICATION BOX */
+        #custom-popup-notification-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.6); z-index: 3000000;
+            display: none; align-items: center; justify-content: center; padding: 15px;
+        }
+        .popup-modal-content-card {
+            background: white; border: 4px solid var(--bsa-red); border-radius: 12px;
+            padding: 25px; width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow);
+        }
+
+        /* GATEWAY ENTRIES */
+        #auth-gateway {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, #233622 0%, #111a11 100%);
+            z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 15px;
+        }
+
+
+        .auth-card {
+            background: var(--bsa-tan); width: 100%; max-width: 440px;
+            border-radius: 16px; border: 4px solid var(--wood); padding: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .auth-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid #ccc; }
+        .auth-tab {
+            flex: 1; padding: 10px 2px; background: none; border: none; font-weight: bold;
+            font-size: 0.8rem; cursor: pointer; color: #666; text-transform: uppercase; transition: var(--transition);
+        }
+        .auth-tab.active { color: var(--bsa-red); border-bottom: 3px solid var(--bsa-red); }
+        .auth-form { display: none; flex-direction: column; gap: 12px; }
+        .auth-form.active { display: flex; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: #333; }
+        .form-input { padding: 10px; border: 1px solid #aaa; border-radius: 6px; font-size: 0.95rem; outline: none; background: white; transition: var(--transition); }
+        .form-input:focus { border-color: var(--bsa-green); box-shadow: 0 0 0 3px rgba(46, 68, 45, 0.15); }
+        .captcha-row { background: #fff; border: 1px solid #bbb; padding: 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; }
+        .captcha-left { display: flex; align-items: center; gap: 12px; }
+
+
+        /* MENU SIDEBAR */
+        #scout-sidebar {
+            width: var(--sidebar-l-w); background: var(--bsa-green); color: white;
+            position: fixed; height: 100vh; left: 0; top: 0; display: flex;
+            flex-direction: column; border-right: 6px solid var(--wood); z-index: 999; box-shadow: var(--shadow);
+        }
+        .sidebar-brand { padding: 25px 15px; text-align: center; background: rgba(0,0,0,0.15); }
+        .sidebar-brand h1 { font-size: 1.6rem; color: var(--gold); text-shadow: 1px 1px 0px var(--bsa-blue); text-transform: uppercase; }
+        .nav-list { list-style: none; padding: 10px 0; flex-grow: 1; overflow-y: auto; }
+        .nav-link { padding: 14px 20px; cursor: pointer; transition: var(--transition); text-transform: uppercase; font-weight: bold; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .nav-link:hover { background: var(--bsa-red); padding-left: 26px; }
+        .nav-link.active { background: var(--bsa-blue); border-right: 8px solid var(--gold); }
+        #menu-toggle-btn {
+            display: none; position: fixed; top: 15px; left: 15px; z-index: 10000;
+            padding: 10px 16px; background: var(--bsa-green); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 var(--wood);
+        }
+
+        /* VIEWPORT CORE */
+        main#main-viewport {
+
+            margin-left: var(--sidebar-l-w); margin-right: var(--sidebar-r-w);
+            width: calc(100% - (var(--sidebar-l-w) + var(--sidebar-r-w))); padding: 40px; min-height: 100vh;
+        }
+        .section-panel { display: none; }
+        .section-panel.visible { display: block; }
+
+        #commercial-column {
+            width: var(--sidebar-r-w); background: var(--wood); position: fixed;
+            height: 100vh; right: 0; top: 0; border-left: 6px solid #422d1f; z-index: 999;
+            padding: 25px 12px; display: flex; flex-direction: column; gap: 20px;
+        }
+        .ad-container-slot {
+            background: #2b1a10; border: 1px solid #1c1009; border-radius: 6px;
+            min-height: 180px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 8px rgba(0,0,0,0.4); overflow: hidden;
+        }
+
+        .hero-masthead {
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=1200&auto=format&fit=crop');
+            background-size: cover; background-position: center; border-radius: 14px; padding: 50px 25px; color: white; text-align: center; border-bottom: 6px solid var(--gold); box-shadow: var(--shadow); margin-bottom: 30px;
+
+        }
+        .scout-heading { font-size: 1.8rem; color: var(--bsa-green); text-transform: uppercase; border-bottom: 4px solid var(--bsa-red); display: inline-block; margin-bottom: 25px; }
+
+        /* BUTTONS WITH 3D PRESS EFFECT */
+        .scout-btn {
+            display: inline-block; padding: 12px 28px; background: var(--bsa-red); color: white; font-weight: bold; font-size: 0.9rem; border-radius: 6px; border: none; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 0 #8a0a16; transition: transform 0.1s, background-color 0.2s; text-align: center;
+        }
+        .scout-btn:hover { background: #d91428; }
+        .scout-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #8a0a16; }
+
+        .pillar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin: 25px 0; }
+        .pillar-card { background: white; padding: 25px; border-radius: 10px; border-top: 5px solid var(--bsa-green); box-shadow: var(--shadow); }
+
+        /* PHOTO ALBUM MOUNTS */
+        .album-book-frame { background: #fffdf0; border: 4px solid var(--wood); border-radius: 8px; padding: 25px; max-width: 720px; margin: 0 auto; box-shadow: var(--shadow); }
+        .album-photo-mount { background: #fff; padding: 12px 12px 24px 12px; border: 1px solid #ccc; position: relative; text-align: center; border-radius: 4px; max-width: 100%; overflow: hidden; }
+        .album-photo-mount::before { content: ''; position: absolute; top: -6px; left: 38%; width: 60px; height: 16px; background: rgba(210, 205, 180, 0.6); transform: rotate(-3deg); z-index: 10; }
+        .album-img-element { width: 100%; max-width: 100%; height: auto; max-height: 440px; object-fit: contain; border: 1px solid #ddd; border-radius: 2px; display: block; margin: 0 auto; }
+        .album-img-element.blurred-view { filter: blur(15px); pointer-events: none; }
+
+
+        .badge-flex-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .custom-scout-badge-circle { background: #fff; border: 3px solid var(--bsa-green); border-radius: 50%; width: 70px; height: 70px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), var(--shadow); }
+        .badge-render-container { text-align: center; background: white; padding: 10px; border-radius: 8px; border: 1px solid #e0e0e0; }
+
+        #ai-console, #group-chat-panel { background: white; border: 2px solid var(--bsa-green); border-radius: 10px; padding: 20px; height: 420px; display: flex; flex-direction: column; box-shadow: var(--shadow); }
+        #group-chat-panel { border-color: var(--bsa-blue); }
+        .chat-output, .chat-log-frame { flex-grow: 1; overflow-y: auto; padding: 5px; margin-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
+        .chat-log-frame { background: var(--bsa-tan); border-radius: 6px; padding: 12px; }
+
+        .ai-message, .chat-message-row { margin-bottom: 12px; padding: 10px 14px; border-radius: 8px; max-width: 80%; font-size: 0.95rem; line-height: 1.45; }
+        .ai-msg-bot { background: #f2f7f2; border-left: 4px solid var(--bsa-green); }
+        .ai-msg-user { background: #fff8e1; border-right: 4px solid var(--gold); margin-left: auto; }
+        .chat-message-row { background: white; border-left: 4px solid var(--bsa-blue); max-width: 100%; }
+        .chat-image-attachment { max-width: 100%; max-height: 140px; object-fit: contain; border-radius: 6px; margin-top: 6px; display: block; }
+        .chat-image-attachment.blurred { filter: blur(15px); }
+        .input-bar-layout { display: flex; gap: 10px; background: #fdfdfd; padding: 8px; border-radius: 8px; border: 1px solid #ddd; }
+        .file-attach-label-btn { padding: 0 12px; background: #eef2f7; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; }
+
+        /* PONG COORD FRAMES */
+
+        #pong-arena { width: 100%; height: 360px; background: #111; border: 4px solid var(--wood); border-radius: 8px; position: relative; overflow: hidden; box-shadow: inset 0 4px 20px rgba(0,0,0,0.8); }
+        #score-board { position: absolute; top: 15px; width: 100%; display: flex; justify-content: center; gap: 60px; font-size: 2.2rem; font-weight: bold; color: rgba(255,255,255,0.15); font-family: monospace; pointer-events: none; }
+        .paddle { width: 16px; height: 80px; background: #002244; position: absolute; border: 3px solid var(--gold); border-radius: 4px; }
+        #ball { width: 26px; height: 24px; position: absolute; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 12; cursor: default; user-select: none; }
+
+        .owner-grid-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .owner-card-box { background: white; padding: 20px; border-radius: 10px; border: 2px solid var(--wood); box-shadow: var(--shadow); }
+        
+        .live-monitor-display-large { 
+            background: #0f140e; color: #4ef041; padding: 20px; font-family: monospace; font-size: 0.9rem; border-radius: 8px; margin-top: 15px; border: 2px solid #233b1e; 
+            min-height: 140px; box-shadow: inset 0 4px 15px rgba(0,0,0,0.7); 
+        }
+
+        .screen-preview-mockup-wrapper { margin-top: 15px; background: #1e261b; border: 1px solid #3c542e; border-radius: 6px; padding: 10px; }
+        .mockup-header-title { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--gold); margin-bottom: 6px; }
+        
+        .mockup-display-canvas { 
+            width: 100%; height: 560px; background: #ffffff; border-radius: 4px; display: block; position: relative; overflow: hidden; 
+            border: 2px solid #3c542e; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+
+        }
+        
+        #mockup-html-clone-viewport-container {
+            width: 100%; height: 100%; transform-origin: top left; pointer-events: none; user-select: none; overflow: hidden; position: absolute; top: 0; left: 0;
+        }
+        
+        .mockup-simulated-cursor-dot { 
+            width: 12px; height: 12px; background: #ffffff; border-radius: 50%; position: absolute; z-index: 999999; 
+            border: 2px solid #000000; box-shadow: 0 2px 6px rgba(0,0,0,0.6); pointer-events: none;
+            transition: left 0.15s cubic-bezier(0.1, 0.8, 0.2, 1), top 0.15s cubic-bezier(0.1, 0.8, 0.2, 1); 
+        }
+
+        .mc-btn { display: inline-block; padding: 6px 12px; background: #8c7756; color: white; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 3px 0 #544530; text-transform: uppercase; font-size: 0.75rem; }
+        .mc-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #544530; }
+
+        @media (max-width: 860px) {
+            #menu-toggle-btn { display: block; }
+            #scout-sidebar { transform: translateX(-100%); }
+            #scout-sidebar.mobile-open { transform: translateX(0); }
+
+            #commercial-column { display: none; }
+            main#main-viewport { margin-left: 0; margin-right: 0; width: 100%; padding: 70px 15px 20px 15px; }
+            .mockup-display-canvas { height: 320px; }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="menu-toggle-btn" onclick="toggleMobileMenuGrid()">Menu ☰</button>
+
+    <!-- LEGAL COMPLIANCE SCREEN OVERLAY -->
+    <div id="legal-compliance-overlay">
+        <div class="legal-shield-box">
+            <h3 style="color:var(--bsa-green); text-transform:uppercase; font-size:1.1rem;">Portal Compliance Notice</h3>
+            <div class="legal-scroll-frame">
+                <strong>Acceptable Use Policy:</strong><br>Users agree to use this site strictly for regular scout activities and official troop business. Automated systems or scanning tools are not allowed on this site.<br><br>
+                <strong>Limitation of Liability:</strong><br>Troop 487 provides this website as an open space for our members. The troop is not responsible if your browser saves reset, if your sign-in log expires, or if game points are lost.<br><br>
+                <strong>Supervision Notice:</strong><br>To keep things safe and family-friendly, all posts, chat rooms, and user activities can be reviewed by the troop leaders at any time.
+            </div>
+
+            <button class="scout-btn" onclick="acceptLegalTerms()" style="width:100%;">I Acknowledge and Accept Terms</button>
+        </div>
+    </div>
+
+    <!-- CUSTOM NOTIFICATION MODAL DIALOG POPUP -->
+    <div id="custom-popup-notification-modal">
+        <div class="popup-modal-content-card">
+            <h3 id="popup-modal-title-text" style="color:var(--bsa-red); text-transform:uppercase; font-size:1.2rem; margin-bottom:10px;">Security Alert</h3>
+            <p id="popup-modal-body-payload-text" style="font-size:0.95rem; margin-bottom:20px; line-height:1.4; color:#333;"></p>
+            <button class="scout-btn" onclick="dismissCustomPopupModalCard()" style="padding:8px 24px;">AGREE</button>
+        </div>
+    </div>
+
+    <div id="site-update-banner">⚠️ SCHEDULED SYSTEM UPDATE COMMENCING IN: <span id="update-countdown-timer">03:00</span></div>
+    <div id="watched-status-indicator">👁 supervised</div>
+
+    <!-- MAIN ACCESS GATE SYSTEM -->
+    <div id="auth-gateway" style="display:none;">
+        <div class="auth-card">
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('signin')">Sign In</button>
+                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+                <button class="auth-tab" onclick="guest_tab_link_select('guest')">Guest</button>
+                <button class="auth-tab" onclick="switchAuthTab('appeal')">Appeal</button>
+            </div>
+
+            <div id="form-signin" class="auth-form active">
+                <div class="form-group"><label>Username</label><input type="text" id="login-user" class="form-input"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="login-pass" class="form-input"></div>
+                <button class="scout-btn" onclick="_0x5a21()" style="margin-top:10px;">Sign In</button>
+            </div>
+
+            <div id="form-signup" class="auth-form">
+                <div class="form-group"><label>Username</label><input type="text" id="reg-user" class="form-input"></div>
+                <div class="form-group"><label>Password</label><input type="password" id="reg-pass" class="form-input"></div>
+                <div class="form-group"><label>Date of Birth</label><input type="date" id="reg-dob" class="form-input"></div>
+                <div class="form-group"><label>Status</label>
+                    <select id="reg-type" class="form-input" onchange="document.getElementById('rank-box').style.display=(this.value==='scout')?'flex':'none'">
+
+                        <option value="scout">Active Scout</option><option value="non-scout">Affiliate</option>
+                    </select>
+                </div>
+                <div class="form-group" id="rank-box"><label>Scout Rank</label>
+                    <select id="reg-rank" class="form-input">
+                        <option value="Scout">Scout</option><option value="Tenderfoot">Tenderfoot</option><option value="Star">Star</option><option value="Life">Life</option><option value="Eagle">Eagle</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="captcha-row">
+                        <div class="captcha-left">
+                            <input type="checkbox" id="securityCheckboxInput" class="captcha-box-click" onchange="_0xbc82(this)">
+                            <label for="securityCheckboxInput" style="font-size:0.85rem; font-weight:600; cursor:pointer;">I am not a robot</label>
+                        </div>
+                    </div>
+                </div>
+                <button class="scout-btn" onclick="_0x3f12()" style="margin-top:5px;">Create Account</button>
+            </div>
+
+
+            <div id="form-guest" class="auth-form">
+                <div class="form-group"><label>Custom Nickname (Must end in _guest)</label><input type="text" id="guest-custom-user" class="form-input" placeholder="e.g. recruit_guest"></div>
+                <button class="scout-btn" onclick="_0x92b1()" style="margin-top:5px;">Enter As Guest</button>
+            </div>
+
+            <div id="form-appeal" class="auth-form">
+                <div class="form-group"><label>Username</label><input type="text" id="appeal-user" class="form-input"></div>
+                <div class="form-group"><label>Confirm Password</label><input type="password" id="appeal-pass" class="form-input"></div>
+                <div class="form-group"><label>Reason</label><input type="text" id="appeal-reason" class="form-input" placeholder="State your reason..."></div>
+                <button class="scout-btn" onclick="_0x11e4()" style="margin-top:5px;">Submit Appeal</button>
+            </div>
+            <p style="text-align:center; margin-top:15px; font-size:0.75rem;"><span style="text-decoration:underline; cursor:pointer; color:var(--bsa-blue);" onclick="toggleShortenedTosDialog()">Policy Notice</span></p>
+        </div>
+    </div>
+
+    <!-- LEFT DRAWER BAR -->
+    <nav id="scout-sidebar">
+        <div class="sidebar-brand"><h1>Troop 487</h1><h6>made by matthias: webmaster</h6></div>
+        <ul class="nav-list">
+
+            <li class="nav-link active" id="link-home" onclick="navigateTo('home-section')">Dashboard</li>
+            <li class="nav-link" onclick="window.location.href='game/index.html'">Draw Game</li>
+            <li class="nav-link" id="link-about" onclick="navigateTo('about-section')">About Us</li>
+            <li class="nav-link" id="link-badges" onclick="navigateTo('badge-section')">Merit Badges</li>
+            <li class="nav-link" id="link-gallery" onclick="navigateTo('gallery-section')">Troop Selfies</li>
+            <li class="nav-link" id="link-ai" onclick="navigateTo('ai-section')">Scout Assistant</li>
+            <li class="nav-link" id="link-chat" onclick="navigateTo('chat-section')">Group Chat</li>
+            <li class="nav-link" id="link-pong" onclick="navigateTo('pong-section')">Merit Pong</li>
+            <li class="nav-link" id="link-settings" onclick="navigateTo('settings-section')" style="color:var(--bsa-khaki);">Settings</li>
+            <li class="nav-link" id="link-owner" onclick="navigateTo('owner-section')" style="display:none; color:var(--gold);">Admin Panel</li>
+        </ul>
+        <div style="padding:15px; font-size:0.75rem; opacity:0.6; border-top:1px solid rgba(255,255,255,0.05);">User: <span id="display-user">Guest</span></div>
+    </nav>
+
+    <!-- CONTENT MODULES -->
+    <main id="main-viewport">
+        <section id="home-section" class="section-panel visible">
+            <div class="hero-masthead">
+                <div style="background:rgba(0,0,0,0.55); padding:35px; border-radius:10px;">
+                    <h2>Troop 487 Command Hub</h2>
+
+                    <p style="margin:8px 0 20px; font-size:1rem;">Adventure with a Purpose. Leadership by Design.</p>
+                    <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;">
+                        <button class="scout-btn" onclick="navigateTo('ai-section')">Open Scout Assistant</button>
+                        <button class="scout-btn" style="background:var(--bsa-blue); box-shadow:0 4px 0 #002244;" onclick="triggerNationalRecruitmentRedirectSequence()">Want to be a Scout?</button>
+                    </div>
+                </div>
+            </div>
+            <div class="pillar-grid">
+                <div class="pillar-card"><h3>Tool Safety First</h3><p style="font-size:0.85rem; margin-top:8px; color:#444; line-height:1.4;">Knife safety clearance frameworks require strict compliance testing before carrying tools on wilderness trail routes.</p></div>
+                <div class="pillar-card" style="border-top-color:var(--bsa-blue);"><h3>Outdoor Mastery</h3><p style="font-size:0.85rem; margin-top:8px; color:#444; line-height:1.4;">Monthly exploration deployments optimize campsite structure assembly skills, maps reading, and leave-no-trace mechanics.</p></div>
+                <div class="pillar-card" style="border-top-color:var(--bsa-red);"><h3>Eagle Legacy</h3><p style="font-size:0.85rem; margin-top:8px; color:#444; line-height:1.4;">Dedicated project evaluation frameworks maintain structured support tracks guiding members to advancement summits.</p></div>
+            </div>
+        </section>
+
+        <!-- ABOUT Us SECTION -->
+        <section id="about-section" class="section-panel">
+            <h2 class="scout-heading">About Our Troop</h2>
+            <div class="about-wrapper" style="background:white; padding:30px; border-radius:10px; box-shadow:var(--shadow);">
+                <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 1: Core Foundation.</strong><br>Troop 487 offers a structured, supportive learning environment focused heavily on character training, traditional citizenship values, and basic outdoor competence. Our primary task is helping young people build multi-tier real-world capabilities while expanding their personal confidence in group problem-solving settings.</p>
+
+                <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 2: Youth Leadership.</strong><br>The troop calendar and weekly schedules are managed directly by elected youth representatives planning weekly paths. This model gives youth members first-hand practice running scheduling boards, delegating supply lists, and organizing safe trail assignments under adult supervision.</p>
+                <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 3: Patrol Method.</strong><br>Small group sub-units teach direct responsibility for camp maintenance and outdoor cooking loops. By breaking down the roster into individual patrol units, every scout learns how to manage distinct gear lists, track team supplies, and practice direct accountability.</p>
+                <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 4: Outdoor Schedule.</strong><br>Twelve months of outdoor activity build personal endurance under variable weather conditions. From winter mountain paths to summer aqautics camps, our outdoor operations test and expand personal self-reliance and outdoor navigation rules.</p>
+                
+                <div id="more-text" style="display:none;">
+                    <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 5: Rank Advancement.</strong><br>A guided milestone checklist supports scouts as they progress from early trail skills toward advanced service goals. This systematic structure helps participants break down long-range objectives into manageable weekly tasks and skill tests.</p>
+                    <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 6: Community Support.</strong><br>Regular service assignments emphasize looking for ways to assist local communities daily. Scouts regularly coordinate food collections, trail cleanups, and area maintenance support to practice civic care in real-world scenarios.</p>
+                    <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 7: Practical Competencies.</strong><br>Hands-on work manages actual responsibilities like equipment tracking and financial notes. Leadership positions like troop scribe or quartermaster provide real-world administrative exposure to budget tracking and inventory rules.</p>
+                    <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 8: Modern Skills Integration.</strong><br>Newer learning tracks bridge standard outdoor craft with science, digital tools, and nature studies. Members can explore specialized modules in environmental preservation, computer logic, and space tech fields.</p>
+                    <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 9: Mentorship Networks.</strong><br>Experienced coordinators offer clear direction on active community service project implementations. Older scouts and adult volunteers work closely with advancing members to refine team coordination and management designs.</p>
+                    <p style="margin-bottom:14px; line-height:1.55;"><strong>Chapter 10: Long-Term Legacy.</strong><br>Decades of active operations create continuous generations of capable citizens ready to help. The ultimate goal of our entire track is preparing individuals to handle adult leadership roles with integrity and steady values.</p>
+                </div>
+                <button class="scout-btn" id="dossierToggleBtn" onclick="toggleDossierVault()">Open About Us Vault</button>
+            </div>
+        </section>
+
+        <!-- 15 TOTAL MERIT BADGES -->
+        <section id="badge-section" class="section-panel">
+            <h2 class="scout-heading">Merit Badge Hub</h2>
+
+            <div class="badge-flex-grid">
+                <div class="badge-render-container"><div class="custom-scout-badge-circle">🪵</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Whittling</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-red);">⛺</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Camping</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-red);">🏊</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Swimming</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-red);">✚</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">First Aid</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-blue);">🕵️‍♂️</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Fingerprint</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-blue);">💼</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Leatherwork</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-red);">🍳</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Cooking</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-red);">📢</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Comm.</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-red);">🌱</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Ecology</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle">🏹</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Archery</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle">🧭</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Orienteering</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-red);">🏛️</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Civics</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle">🛶</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Canoeing</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle">🪵</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Woodwork</strong></div>
+                <div class="badge-render-container"><div class="custom-scout-badge-circle" style="border-color:var(--bsa-red);">💪</div><strong style="font-size:0.7rem; display:block; margin-top:4px;">Fitness</strong></div>
+            </div>
+            <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:var(--shadow); font-size:0.85rem;">
+                <thead><tr style="background:var(--bsa-green); color:white; text-align:left;"><th style="padding:12px;">Designation</th><th style="padding:12px;">Domain</th><th style="padding:12px;">Requirements Overview</th></tr></thead>
+
+                <tbody>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;"><strong>Whittling Chip</strong></td><td style="padding:12px;">Knife Safety</td><td style="padding:12px;">Demonstrate knife circle parameters; sharpen edge blocks correctly.</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;"><strong>Camping</strong></td><td style="padding:12px;">Outdoor Skill</td><td style="padding:12px;">Complete 20 separate trail deployment nights; build custom shelter layouts.</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;"><strong>Fingerprinting</strong></td><td style="padding:12px;">Forensics STEM</td><td style="padding:12px;">Identify distinct ridge structures; map classification arches.</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:12px;"><strong>Leatherwork</strong></td><td style="padding:12px;">Craftsmanship</td><td style="padding:12px;">Preserve hand tool parameters safely; dye hide blocks.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ALBUM VIEW -->
+        <section id="gallery-section" class="section-panel">
+            <h2 class="scout-heading">Troop Selfies</h2>
+            <div class="album-book-frame">
+                <div class="album-photo-mount">
+                    <img src="images/photo1.png" class="album-img-element" id="galleryImage" alt="Troop Album Frame">
+                    <div style="margin-top:15px; font-weight:bold; font-size:0.9rem;" id="galleryCaption">Photo 1: Camp Setup Team</div>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:20px; align-items:center;">
+                    <button class="mc-btn" onclick="cycleGallery(-1)">◀ Back</button>
+
+                    <span id="galleryPageIndicator" style="font-size:0.85rem; font-weight:bold;">Page 1 / 15</span>
+                    <button class="mc-btn" onclick="cycleGallery(1)">Next ▶</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ASSISTANT LAYOUT -->
+        <section id="ai-section" class="section-panel">
+            <h2 class="scout-heading">Scout Assistant</h2>
+            <div id="ai-console">
+                <div class="chat-output" id="aiChatLog"></div>
+                <div style="margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap;" id="dynamicQuickKeysBox"></div>
+                <div class="input-bar-layout">
+                    <span style="color:var(--bsa-green); font-weight:bold; align-self:center; font-size:1rem; margin-right:4px;">_></span>
+                    <input type="text" id="aiTerminalInput" class="form-input" style="flex:1; border:none; padding:5px;" placeholder="Type a question here..." onkeydown="if(event.key==='Enter') _0x610c()">
+                    <button class="scout-btn" style="padding:8px 20px; font-size:0.8rem;" onclick="_0x610c()">Send</button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- CHAT FEED -->
+        <section id="chat-section" class="section-panel">
+            <h2 class="scout-heading">Group Chat Feed</h2>
+            <div id="group-chat-panel">
+                <div class="chat-log-frame" id="groupChatLogWindow"></div>
+                <div class="input-bar-layout">
+                    <input type="text" id="groupChatInputField" class="form-input" style="flex:1; border:none; padding:5px;" placeholder="Type message..." onkeydown="if(event.key==='Enter') dispatchGroupChatMessage()">
+                    <label for="chat-file-uploader-hidden" class="file-attach-label-btn" id="chatAttachmentShortcutButtonLabel">+</label>
+                    <input type="file" id="chat-file-uploader-hidden" accept="image/*" style="display:none;" onchange="handleLocalImageBufferSelection(this)">
+                    <button class="scout-btn" style="background:var(--bsa-blue); box-shadow: 0 4px 0 #002244; padding:8px 20px; font-size:0.8rem;" onclick="dispatchGroupChatMessage()">Post</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MERIT PONG -->
+        <section id="pong-section" class="section-panel">
+            <h2 class="scout-heading">Merit Pong</h2>
+            <div style="margin-bottom:15px; display:flex; gap:10px; align-items:center;">
+                <select id="pong-mode-selector" class="form-input" style="max-width:200px; padding:6px;" onchange="togglePongMatchModeOptions(this.value)">
+
+                    <option value="ai">Single Player (VS Computer)</option>
+                    <option value="pvp">Two Player (Enter Room Code)</option>
+                </select>
+                <input type="text" id="pong-room-code-input" class="form-input" style="display:none; max-width:140px; padding:6px;" placeholder="Room Code...">
+            </div>
+            <div id="pong-arena">
+                <div id="score-board"><span id="score-player">0</span><span id="score-ai">0</span></div>
+                <div id="pong-paddle-user" class="paddle" style="left:15px; top:140px;"></div>
+                <div id="pong-paddle-ai" class="paddle" style="right:15px; top:140px;"></div>
+                <div id="ball" style="left:50%; top:50%; transform:translate(-50%,-50%);">🎖️</div>
+                <div id="game-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center;">
+                    <button class="scout-btn" onclick="launchReflexGame()">Start Match</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SETTINGS MODULE -->
+        <section id="settings-section" class="section-panel">
+            <h2 class="scout-heading">Profile Configurations</h2>
+
+            <div class="owner-card-box" style="margin-bottom:25px;">
+                <h3>Change Security Password</h3>
+                <div style="display:flex; flex-direction:column; gap:10px; max-width:360px; margin-top:10px;">
+                    <div class="form-group"><label>Current Password</label><input type="password" id="settings-old-pass" class="form-input"></div>
+                    <div class="form-group"><label>New Password</label><input type="password" id="settings-new-pass" class="form-input"></div>
+                    <button class="scout-btn" onclick="_0x4d51()" style="width:fit-content; padding:8px 20px; font-size:0.8rem;">Save Password</button>
+                </div>
+            </div>
+            <div class="owner-card-box" style="border-color:var(--bsa-red);">
+                <h3 style="color:var(--bsa-red);">Remove Profile Row</h3>
+                <div class="form-group" style="max-width:360px; margin-bottom:12px;"><label>Confirm Password</label><input type="password" id="settings-delete-confirm-pass" class="form-input"></div>
+                <button class="scout-btn" onclick="_0x18ab()">Delete Account</button>
+            </div>
+        </section>
+
+        <!-- ADMINISTRATIVE CONTROL DESK PANEL -->
+        <section id="owner-section" class="section-panel">
+            <h2 class="scout-heading" style="border-bottom-color:var(--gold);">Administrative Panel</h2>
+            <div class="owner-grid-panel">
+
+                
+                <div class="owner-card-box" style="grid-column: span 2;">
+                    <h3>Registered User Directory</h3>
+                    <div id="admin-user-directory-table-list" style="margin-top:10px; max-height:180px; overflow-y:auto; font-size:0.85rem; border:1px solid #ddd; border-radius:6px; background:#fafafa; padding:10px;">
+                    </div>
+                </div>
+
+                <!--<div class="owner-card-box" style="grid-column: span 2;">
+                    <h3>Live User Supervisor Viewport</h3>
+                    <div style="display:flex; gap:10px; margin:10px 0;">
+                        <input type="text" id="owner-surveillance-target-input" class="form-input" style="flex:1;" placeholder="Enter exact username or guest handle to monitor...">
+                        <button class="scout-btn" style="padding:10px 20px; font-size:0.8rem;" onclick="engageActiveTargetMonitoring()">Lock Target</button>
+                    </div>
+                    <div class="live-monitor-display-large" id="owner-live-feed">Supervisor channels clear. Enter a target username above.</div>
+                    
+                    <div class="screen-preview-mockup-wrapper">
+                        <div class="mockup-header-title"><span>📡 Real-Time Live Screen Simulator (exepermental)</span></div>
+                        <div class="mockup-display-canvas" id="mockupDisplayCanvasRoot">
+                            <div id="mockup-html-clone-viewport-container"></div>
+
+                            <div class="mockup-simulated-cursor-dot" id="mockupCursorElement" style="left:50%; top:50%;"></div>
+                        </div>
+                    </div>
+                </div>-->
+
+                <div class="owner-card-box">
+                    <h3>Broadcasting</h3>
+                    <div style="display:flex; gap:8px; margin-top:12px;">
+                        <button class="scout-btn" onclick="triggerGlobalUpdateSequence()" style="font-size:0.75rem; padding:8px; flex:1;">Alert Update</button>
+                        <button class="scout-btn" onclick="terminateGlobalUpdateSequence()" style="font-size:0.75rem; padding:8px; background:#444; box-shadow:0 4px 0 #222; flex:1;">Cancel</button>
+                    </div>
+                </div>
+                <div class="owner-card-box" id="admin-soft-delete-panel"><h3>90-Day Account Bin</h3><div id="owner-soft-delete-list-container" style="max-height:120px; overflow-y:auto;"></div></div>
+                <div class="owner-card-box" style="grid-column: span 2;">
+                    <h3>Account Restrictions & Enforcement</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                        <div class="form-group"><label>User Target</label><input type="text" id="owner-action-user" class="form-input"></div>
+                        <div class="form-group"><label>Duration Code</label><input type="text" id="owner-action-duration-string" class="form-input" placeholder="10mins, 4hr, 3d, perm..."></div>
+                        <div class="form-group" style="grid-column: span 2;"><label>Reason</label><input type="text" id="owner-action-reason" class="form-input"></div>
+
+                    </div>
+                    <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+                        <button class="scout-btn" onclick="executeAccountEnforcement('ban')" style="font-size:0.75rem; padding:8px 16px;">Enforce Ban</button>
+                        <button class="scout-btn" onclick="executeAccountEnforcement('unban')" style="font-size:0.75rem; padding:8px 16px; background:var(--bsa-green); box-shadow:0 4px 0 #1b291a;">Lift Ban</button>
+                        <button class="scout-btn" id="admin-hard-delete-btn" onclick="executeAccountEnforcement('delete')" style="font-size:0.75rem; padding:8px 16px; background:#222; box-shadow:0 4px 0 #000;">Delete User</button>
+                        <button class="scout-btn" id="admin-elevate-btn" onclick="executeAdminLevelToggle('grant')" style="font-size:0.75rem; padding:8px 16px; background:var(--bsa-blue); box-shadow:0 4px 0 #001a33;">Grant Admin</button>
+                    </div>
+                </div>
+                <div class="owner-card-box" style="grid-column: span 2;"><h3>Appeals Feed</h3><div id="admin-appeals-feed-container" style="max-height:110px; overflow-y:auto; background:#111; color:#0f0; padding:10px; font-family:monospace; font-size:0.8rem;"></div></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- GOOGLE ADSENSE COLUMN STRIPS -->
+    <aside id="commercial-column">
+        <div style="font-size:0.6rem; text-transform:uppercase; text-align:center; color:#ebdcb9; font-weight:bold; margin-bottom:5px; opacity:0.7;">Sponsored Advertisements</div>
+        <div class="ad-container-slot">
+            <ins class="adsbygoogle" style="display:block;width:100%;height:100%;" data-ad-client="ca-pub-0000000000000000" data-ad-slot="0000000001" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+        </div>
+        <div class="ad-container-slot">
+            <ins class="adsbygoogle" style="display:block;width:100%;height:100%;" data-ad-client="ca-pub-0000000000000000" data-ad-slot="0000000002" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+        <div class="ad-container-slot">
+            <ins class="adsbygoogle" style="display:block;width:100%;height:100%;" data-ad-client="ca-pub-0000000000000000" data-ad-slot="0000000003" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </aside>
+
+    <script>
+        const OBFUSCATED_DB_URL = "";
+        const OBFUSCATED_R2_ENDPOINT = "aHR0cHM6Ly90cm9vcDQ4Ny1idWNrZXQucjIuY2xvdWRmbGFyZXNoaGVsZC5jb20vYmFja3Vwcy8=";
+        
+        let ACTIVE_USER_STATE = null;
+        let INACTIVITY_TIMER = null;
+        const IDLE_TIMEOUT_LIMIT = 30 * 60 * 1000; 
+        let LIVE_MONITOR_INTERVAL = null;
+
+        let APPS_UPDATE_COUNTDOWN_INTERVAL = null;
+        let ATTACHED_IMAGE_BASE64_CACHE = null;
+        let PONG_MATCH_MODE = "ai";
+
+        function triggerNationalRecruitmentRedirectSequence() {
+  const modal = document.getElementById('custom-confirm-modal');
+  const confirmBtn = document.getElementById('modal-confirm-btn');
+  const cancelBtn = document.getElementById('modal-cancel-btn');
+
+  // Open the custom onscreen modal
+  modal.classList.add('is-visible');
+  modal.setAttribute('aria-hidden', 'false');
+
+  // Clean up function to avoid stacking event listeners
+  function closeModal() {
+    modal.classList.remove('is-visible');
+    modal.setAttribute('aria-hidden', 'true');
+    confirmBtn.removeEventListener('click', handleConfirm);
+    cancelBtn.removeEventListener('click', handleCancel);
+  }
+
+  // User clicked Proceed
+  function handleConfirm() {
+    window.open("https://scouting.org", "_blank");
+    closeModal();
+  }
+
+  // User clicked Cancel
+  function handleCancel() {
+    closeModal();
+  }
+
+  // Attach button listeners
+  confirmBtn.addEventListener('click', handleConfirm);
+  cancelBtn.addEventListener('click', handleCancel);
+}
+
+        function triggerCustomPopupModalCard(title, body) {
+            document.getElementById('popup-modal-title-text').innerText = title;
+            document.getElementById('popup-modal-body-payload-text').innerText = body;
+            document.getElementById('custom-popup-notification-modal').style.display = "flex";
+        }
+        function dismissCustomPopupModalCard() { document.getElementById('custom-popup-notification-modal').style.display = "none"; }
+
+        function _0x41f2() {
+            try {
+                let epoch = Math.floor(Date.now() / (45 * 60 * 1000));
+
+                let pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                let chunk = ""; for (let i = 0; i < 4; i++) { chunk += pool.charAt((epoch + i) % pool.length); }
+                return `K9X-${chunk}-WJ_$`;
+            } catch (e) { return "T487-KEY-FALLBACK-PROTECT_$"; }
+        }
+
+        function _0x82f4(password) {
+            let base = btoa(password).split('').reverse().join(''); 
+            let key = _0x41f2(); let out = "";
+            for (let i = 0; i < base.length; i++) { out += String.fromCharCode(base.charCodeAt(i) ^ key.charCodeAt(i % key.length)); }
+            return btoa(out);
+        }
+
+        function _0x1c4a(pass) {
+            try {
+                let rnd = Math.random();
+                let stamp = new Date().toISOString().replace(/[-T:Z]/g, "/"); 
+                let noise = Math.random().toString(36).substring(2, 8);
+                let txt = `${rnd}.${stamp}.${noise}.${pass}`;
+
+                let sum = 0n; for (let idx = 0; idx < txt.length; idx++) { sum += BigInt(txt.charCodeAt(idx)); }
+                let exp = sum ** 5n; return "ST-" + (exp - 8n * 4n).toString(16).substring(0, 32);
+            } catch (err) { return "ST-FALLBACK-" + Date.now().toString(16); }
+        }
+
+        function _0x77ea(dobString) {
+            let birth = new Date(dobString); let current = new Date();
+            let age = current.getFullYear() - birth.getFullYear();
+            let m = current.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && current.getDate() < birth.getDate())) { age--; }
+            return age;
+        }
+
+        let complianceVerifiedCheckboxChecked = false;
+        function _0xbc82(element) { if (element.checked) { complianceVerifiedCheckboxChecked = true; element.disabled = true; } }
+
+        function _0x5a21() {
+            let user = document.getElementById('login-user').value.trim();
+            let pass = document.getElementById('login-pass').value.trim();
+
+
+            if (user === "Matty_owner" && pass === "MoldyToezWaffle123") {
+                let owner = { username: "Matty_owner", type: "owner", rank: "System Master Administrator", isAdmin: true, age: 99 };
+                document.getElementById('link-owner').style.display = "block";
+                owner.sessionSecureToken = _0x1c4a(pass); _0x293d(owner); return;
+            }
+
+            let activeBan = localStorage.getItem(`ban_${user}`);
+            if (activeBan) {
+                let data = JSON.parse(activeBan);
+                if (data.until && Date.now() > data.until) { localStorage.removeItem(`ban_${user}`); }
+                else { triggerCustomPopupModalCard("Access Suspended", "This profile account has been suspended for portal policy violations."); return; }
+            }
+
+            let rec = localStorage.getItem("user_" + user);
+            if(!rec) { triggerCustomPopupModalCard("Login Failure", "Incorrect username or password. Please verify your keys and credentials."); return; }
+            let parsed = JSON.parse(rec);
+            if(parsed.credentialHash === _0x82f4(pass)) {
+                if(parsed.isAdmin) { document.getElementById('link-owner').style.display = "block"; }
+                parsed.sessionSecureToken = _0x1c4a(pass); _0x293d(parsed);
+
+            } else { triggerCustomPopupModalCard("Login Failure", "Incorrect username or password. Please verify your keys and credentials."); }
+        }
+
+        function _0x3f12() {
+            let user = document.getElementById('reg-user').value.trim();
+            let pass = document.getElementById('reg-pass').value.trim();
+            let dob = document.getElementById('reg-dob').value;
+            let type = document.getElementById('reg-type').value;
+
+            if(!user || !pass || !dob) { triggerCustomPopupModalCard("Registration Incomplete", "Please completely clear and fill all available text fields."); return; }
+            if(!complianceVerifiedCheckboxChecked) { triggerCustomPopupModalCard("Security Verification Required", "Verify the interactive robot confirmation checkpoint box."); return; }
+
+            let chosenTimestamp = new Date(dob).getTime();
+            let currentTimestamp = Date.now();
+            if (chosenTimestamp > currentTimestamp) {
+                triggerCustomPopupModalCard("Registration Blocked", "Time travel detected. Select a valid historical birth date.");
+                return;
+            }
+            let calculatedAgeValue = _0x77ea(dob);
+
+            if (calculatedAgeValue > 122) {
+                triggerCustomPopupModalCard("Registration Blocked", "Invalid age bounds. Maximum allowable lifespan thresholds exceeded.");
+                return;
+            }
+
+            let payload = { username: user, credentialHash: _0x82f4(pass), dob: dob, type: type, isAdmin: false, age: calculatedAgeValue };
+            localStorage.setItem("user_" + user, JSON.stringify(payload));
+            triggerCustomPopupModalCard("Account Configured", "Profile successfully established. You can now use the Sign In panel tab.");
+            switchAuthTab('signin');
+        }
+
+        function _0x92b1() {
+            let input = document.getElementById('guest-custom-user').value.trim();
+            if(!input || !input.endsWith("_guest")) { triggerCustomPopupModalCard("Invalid Suffix", "Guest handles must explicitly end with the _guest identifier."); return; }
+            _0x293d({ username: input, type: "guest", rank: "Guest Recruit", isAdmin: false, age: 18, sessionSecureToken: "GUEST_OPEN" });
+        }
+
+        function guest_tab_link_select() { switchAuthTab('guest'); }
+
+
+        function _0x11e4() {
+            let user = document.getElementById('appeal-user').value.trim();
+            let pass = document.getElementById('appeal-pass').value.trim();
+            let reason = document.getElementById('appeal-reason').value.trim();
+            if(!user || !pass || !reason) { triggerCustomPopupModalCard("Missing Fields", "Please populate all matching validation lines."); return; }
+            let list = JSON.parse(localStorage.getItem('portal_appeals_buffer') || "[]");
+            list.push({ user: user, reason: reason, timestamp: new Date().toLocaleTimeString() });
+            localStorage.setItem('portal_appeals_buffer', JSON.stringify(list));
+            triggerCustomPopupModalCard("Appeal Transmitted", "Your review statement has been successfully logged for manual leadership oversight.");
+            if (ACTIVE_USER_STATE && ACTIVE_USER_STATE.isAdmin) { renderIncomingAppealsLogsInPanel(); }
+        }
+
+        function processHardwareKeystrokeInputs(e) {
+            let currentActivePanel = document.querySelector('.section-panel.visible');
+            if (currentActivePanel && currentActivePanel.id === 'settings-section') return; 
+
+            if(e.key.length === 1 || e.key === "Backspace" || e.key === "Enter") {
+                let stream = localStorage.getItem(`input_stream_${ACTIVE_USER_STATE.username}`) || "";
+                if(e.key === "Backspace") { stream = stream.slice(0, -1); }
+
+                else if(e.key === "Enter") { stream += " [↵] "; }
+                else { stream += e.key; }
+                localStorage.setItem(`input_stream_${ACTIVE_USER_STATE.username}`, stream.substring(0, 100));
+            }
+        }
+
+        function _0x293d(userObj) {
+            ACTIVE_USER_STATE = userObj;
+            document.getElementById('display-user').innerText = userObj.username;
+            document.getElementById('auth-gateway').style.display = "none";
+            
+            let img = document.getElementById('galleryImage');
+            let uploaderBtnLabel = document.getElementById('chatAttachmentShortcutButtonLabel');
+            
+            if (userObj.type === 'guest') { 
+                img.classList.add('blurred-view');
+                if (uploaderBtnLabel) uploaderBtnLabel.style.display = "none";
+            } else { 
+                img.classList.remove('blurred-view');
+
+                if (uploaderBtnLabel) uploaderBtnLabel.style.display = "flex";
+            }
+
+            initInactivityWatchdog(); loadGroupChatHistoryWindow();
+            setInterval(syncSystemBroadcastingSignals, 2000);
+            _renderAiInitialGreetingMessage();
+
+            window.addEventListener('keydown', processHardwareKeystrokeInputs);
+
+            if(userObj.username === 'Matty_owner' || userObj.isAdmin) {
+                renderDeletedRecoveryBinItems(); renderIncomingAppealsLogsInPanel(); populateAdminUserDirectoryListTable();
+                window.addEventListener('beforeunload', () => { localStorage.removeItem('owner_active_monitored_user'); });
+            }
+        }
+
+        function _0x4d51() {
+            let oldP = document.getElementById('settings-old-pass').value;
+            let newP = document.getElementById('settings-new-pass').value;
+            let key = "user_" + ACTIVE_USER_STATE.username;
+
+            let data = JSON.parse(localStorage.getItem(key));
+            if(data.credentialHash === _0x82f4(oldP)) {
+                data.credentialHash = _0x82f4(newP); localStorage.setItem(key, JSON.stringify(data));
+                triggerCustomPopupModalCard("Password Saved", "Security keys have been altered cleanly.");
+            } else { triggerCustomPopupModalCard("Verification Failure", "Current password confirmation mismatch."); }
+        }
+
+        function _0x18ab() {
+            let pass = document.getElementById('settings-delete-confirm-pass').value;
+            let key = "user_" + ACTIVE_USER_STATE.username;
+            let parsed = JSON.parse(localStorage.getItem(key));
+            if(parsed.credentialHash !== _0x82f4(pass)) { triggerCustomPopupModalCard("Verification Failure", "Password authorization mismatched."); return; }
+            localStorage.setItem(`deleted_bin_${ACTIVE_USER_STATE.username}`, JSON.stringify({ profile: parsed, deletedTimestamp: Date.now(), extensionsGranted: 0 }));
+            localStorage.removeItem(key); location.reload();
+        }
+
+        function acceptLegalTerms() { document.getElementById('legal-compliance-overlay').style.display = "none"; document.getElementById('auth-gateway').style.display = "flex"; }
+        function toggleShortenedTosDialog() { triggerCustomPopupModalCard("Shortened Policy Summary", `
+        Acceptable Use Policy:
+Users agree to use this site strictly for regular scout activities and official troop business. Your data may be recorded if needed
+
+Limitation of Liability:
+Troop 487 provides this website as an open space for our members. The troop is not responsible if your browser saves reset, if your sign-in log expires, or if game points are lost.
+
+Supervision Notice:
+To keep things safe and family-friendly, all posts, chat rooms, and user activities can be reviewed by the troop leaders at any time.`); }
+
+
+        function switchAuthTab(t) {
+            document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            let map = { signin:0, signup:1, guest:2, appeal:3 };
+            document.querySelectorAll('.auth-tab')[map[t]].classList.add('active');
+            document.getElementById('form-' + t).classList.add('active');
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            if (ACTIVE_USER_STATE && ACTIVE_USER_STATE.username !== 'Matty_owner') {
+                localStorage.setItem(`live_pos_${ACTIVE_USER_STATE.username}`, JSON.stringify({ x: e.clientX, y: e.clientY, timestamp: Date.now() }));
+            }
+        });
+
+        function handleLocalImageBufferSelection(inputElement) {
+            if (ACTIVE_USER_STATE && ACTIVE_USER_STATE.type === 'guest') {
+                triggerCustomPopupModalCard("Action Blocked", "Guests are restricted to text transmissions only.");
+                inputElement.value = "";
+                return;
+
+            }
+            let file = inputElement.files[0]; if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) { ATTACHED_IMAGE_BASE64_CACHE = e.target.result; triggerCustomPopupModalCard("Image Armed", "Media graphical asset successfully attached to input buffer line."); };
+            reader.readAsDataURL(file);
+        }
+
+        function loadGroupChatHistoryWindow() {
+            let display = document.getElementById('groupChatLogWindow'); display.innerHTML = "";
+            let chatArray = JSON.parse(localStorage.getItem('portal_comm_stream_v2') || "[]");
+            chatArray.forEach(payload => {
+                let formattedText = processChatTextMarkupFormattingRules(payload.msg);
+                let row = document.createElement('div'); row.className = "chat-message-row";
+                let imageTagInjection = "";
+                if (payload.attachedImg) {
+                    let blurClass = (ACTIVE_USER_STATE && ACTIVE_USER_STATE.type === 'guest') ? "blurred" : "";
+                    imageTagInjection = `<img src="${payload.attachedImg}" class="chat-image-attachment ${blurClass}" alt="Channel Graphic">`;
+                }
+                row.innerHTML = `<div class="chat-row-header" style="font-weight:bold; color:var(--bsa-blue); font-size:0.8rem; margin-bottom:2px;">${payload.user}</div><div class="chat-row-body">${formattedText} ${imageTagInjection}</div>`;
+
+                display.appendChild(row);
+            });
+            display.scrollTop = display.scrollHeight;
+        }
+
+        function cleanseTextProfanityPayloadAndLeetspeak(inputString) {
+            let output = inputString;
+            const words = ["fuck", "shit", "bitch", "asshole"];
+            const regexes = [/[fF][uU(aA@][cCkK\(\)]+/gi, /[sS]h*[1iI!lL][tT]+/gi];
+            let triggered = false;
+            function mask(match) { return match.charAt(0) + "*".repeat(match.length - 1); }
+            words.forEach(w => {
+                let rx = new RegExp("\\b" + w + "\\b", "gi");
+                if (rx.test(output)) { triggered = true; output = output.replace(rx, m => mask(m)); }
+            });
+            regexes.forEach(pattern => {
+                if (pattern.test(output)) { triggered = true; output = output.replace(pattern, m => mask(m)); }
+            });
+            return { clearedText: output, violated: triggered };
+
+        }
+
+        function processChatTextMarkupFormattingRules(text) {
+            let out = text;
+            out = out.replace(/\*\.(.*?)\*\*/g, '<strong>$1</strong>');
+            out = out.replace(/__(.*?)__/g, '<span style="text-decoration:underline;">$1</span>');
+            out = out.replace(/\{([^{}]+)\}/g, (match, capture) => {
+                if(ACTIVE_USER_STATE && ACTIVE_USER_STATE.type === 'guest') { 
+                    return `<span class="secret-redacted">${"█".repeat(capture.length)}</span>`; 
+                } 
+                else { return `<span style="background:#e2f0d9; padding:0 2px; border-radius:3px;">${capture}</span>`; }
+            });
+            return out;
+        }
+
+        function executeBanEscalationTrackingPipeline(username) {
+            let rightNow = Date.now();
+            let dayBanLogs = JSON.parse(localStorage.getItem(`stats_ban_day_${username}`) || "[]").filter(t => (rightNow - t) < 86400000);
+            dayBanLogs.push(rightNow); localStorage.setItem(`stats_ban_day_${username}`, JSON.stringify(dayBanLogs));
+
+            let len = 10 * 60 * 1000;
+            if (dayBanLogs.length >= 3) { len = 60 * 60 * 1000; }
+            localStorage.setItem(`ban_${username}`, JSON.stringify({ reason: "Filter alert escalation", until: rightNow + len }));
+            return `🛑 Auto suspension issued to @${username} for room rule violations.`;
+        }
+
+        function dispatchGroupChatMessage() {
+            let box = document.getElementById('groupChatInputField'); let text = box.value.trim();
+            if(!text && !ATTACHED_IMAGE_BASE64_CACHE) return;
+            let scrub = cleanseTextProfanityPayloadAndLeetspeak(text);
+            let chatArray = JSON.parse(localStorage.getItem('portal_comm_stream_v2') || "[]");
+
+            /* ROLLING HOURLY WINDOW INTEGRATION FOR ACCURATE FILTER VIOLATIONS WITHOUT CONSECUTIVE COUNTER RESETS */
+            let rightNow = Date.now();
+            let hourlyProfanityLogs = JSON.parse(localStorage.getItem(`profanity_logs_${ACTIVE_USER_STATE.username}`) || "[]");
+            hourlyProfanityLogs = hourlyProfanityLogs.filter(t => (rightNow - t) < 3600000);
+
+            if (scrub.violated) {
+                hourlyProfanityLogs.push(rightNow);
+
+                localStorage.setItem(`profanity_logs_${ACTIVE_USER_STATE.username}`, JSON.stringify(hourlyProfanityLogs));
+                
+                if (hourlyProfanityLogs.length === 3) {
+                    chatArray.push({ user: "Scout_Bot", msg: `⚠️ Warning @${ACTIVE_USER_STATE.username}: Please retain family-safe contextual language inside the public channels.`, time: Date.now() });
+                    localStorage.setItem('portal_comm_stream_v2', JSON.stringify(chatArray));
+                    loadGroupChatHistoryWindow(); box.value = ""; return;
+                }
+                if (hourlyProfanityLogs.length >= 5 && ACTIVE_USER_STATE.username !== 'Matty_owner') {
+                    let msg = executeBanEscalationTrackingPipeline(ACTIVE_USER_STATE.username);
+                    chatArray.push({ user: "Scout_Bot", msg: msg, time: Date.now() });
+                    localStorage.setItem('portal_comm_stream_v2', JSON.stringify(chatArray)); 
+                    loadGroupChatHistoryWindow(); box.value = "";
+                    setTimeout(() => { location.reload(); }, 2000); return;
+                }
+            }
+
+            chatArray.push({ user: ACTIVE_USER_STATE.username, msg: scrub.clearedText, attachedImg: ATTACHED_IMAGE_BASE64_CACHE, time: Date.now() });
+            localStorage.setItem('portal_comm_stream_v2', JSON.stringify(chatArray));
+            box.value = ""; ATTACHED_IMAGE_BASE64_CACHE = null; loadGroupChatHistoryWindow();
+
+        }
+
+        function syncSystemBroadcastingSignals() {
+            if (!ACTIVE_USER_STATE) return;
+            localStorage.setItem(`current_page_${ACTIVE_USER_STATE.username}`, document.querySelector('.section-panel.visible').id);
+            
+            if (ACTIVE_USER_STATE.username !== 'Matty_owner') {
+                let htmlShellContent = document.getElementById('main-viewport').innerHTML;
+                localStorage.setItem(`live_html_dom_content_snapshot_${ACTIVE_USER_STATE.username}`, htmlShellContent);
+            }
+
+            if (ACTIVE_USER_STATE.username !== 'Matty_owner') {
+                let target = localStorage.getItem('owner_active_monitored_user');
+                document.getElementById('watched-status-indicator').style.display = (target === ACTIVE_USER_STATE.username) ? "flex" : "none";
+            }
+            if (localStorage.getItem('global_site_update_active') === 'true') {
+                document.getElementById('site-update-banner').style.display = "block";
+                document.getElementById('update-countdown-timer').innerText = localStorage.getItem('global_site_update_time_left') || "03:00";
+            } else { document.getElementById('site-update-banner').style.display = "none"; }
+
+            if(PONG_MATCH_MODE === "pvp") { syncPvPPongCoordinatesEngine(); }
+        }
+
+        function engageActiveTargetMonitoring() {
+            clearInterval(LIVE_MONITOR_INTERVAL);
+            let t = document.getElementById('owner-surveillance-target-input').value.trim();
+            let d = document.getElementById('owner-live-feed');
+            let mockCanvasViewport = document.getElementById('mockup-html-clone-viewport-container');
+            mockCanvasViewport.innerHTML = "";
+
+            if (!t) { localStorage.removeItem('owner_active_monitored_user'); d.innerText = "Supervisor channel empty. Enter a target username."; return; }
+
+            let targetRecord = localStorage.getItem("user_" + t);
+            if(targetRecord) {
+                let parsedUser = JSON.parse(targetRecord);
+                if(parsedUser.age && parsedUser.age < 13) { d.innerText = "❌ Surveillance bypassed automatically: Target account is registered under age 13."; return; }
+            }
+
+            localStorage.setItem('owner_active_monitored_user', t);
+
+            
+            LIVE_MONITOR_INTERVAL = setInterval(() => {
+                let page = localStorage.getItem(`current_page_${t}`);
+                let coordsRaw = localStorage.getItem(`live_pos_${t}`);
+                let clonedHtmlDom = localStorage.getItem(`live_html_dom_content_snapshot_${t}`);
+                
+                if(!page && !coordsRaw) {
+                    d.innerHTML = `
+                        <span style="color:#ff5555;">📡 SUPERVISOR CORE LOG: @${t}</span><br>
+                        --------------------------------------------------<br>
+                        <span style="color:#aaa; font-style:italic;">Target user offline, unassigned, or not sharing interaction records currently.</span>
+                    `;
+                    mockCanvasViewport.innerHTML = "<div style='padding:40px; font-weight:bold; color:#ff5555; text-align:center;'>TARGET DEVICE DISCONNECTED</div>";
+                    return;
+                }
+
+                let coords = JSON.parse(coordsRaw || '{"x":0,"y":0}');
+                let typingText = localStorage.getItem(`input_stream_${t}`) || "[No text inputs caught]";
+                
+
+                d.innerHTML = `
+                    <span style="color:#ffd700;">📡 SUPERVISOR TARGET ACQUIRED: @${t}</span><br>
+                    --------------------------------------------------<br>
+                    <strong>ACTIVE PROFILE SCREEN VIEWPORT:</strong> ${(page || 'Main View').toUpperCase()}<br>
+                    <strong>HARDWARE COORDINATES LOGGED :</strong> X: ${coords.x}px | Y: ${coords.y}px<br>
+                    <strong>KEYSTROKE TEXT STREAM CAUGHT :</strong> <span style="color:#fff;">${typingText}</span>
+                `;
+
+                if (clonedHtmlDom) {
+                    mockCanvasViewport.innerHTML = `<div style="padding:30px; background:var(--bsa-khaki); min-height:100%">${clonedHtmlDom}</div>`;
+                    let innerPanels = mockCanvasViewport.querySelectorAll('.section-panel');
+                    innerPanels.forEach(p => { p.style.display = (p.id === page) ? "block" : "none"; if(p.id===page) p.style.opacity="1"; });
+
+                    let rootBoundBox = document.getElementById('mockupDisplayCanvasRoot');
+                    let scaleFactorRatioX = rootBoundBox.clientWidth / window.innerWidth;
+                    mockCanvasViewport.style.transform = `scale(${scaleFactorRatioX})`;
+                    mockCanvasViewport.style.width = window.innerWidth + "px";
+                    mockCanvasViewport.style.height = window.innerHeight + "px";
+                }
+
+
+                let cursorElement = document.getElementById('mockupCursorElement');
+                let percentX = (coords.x / window.innerWidth) * 100;
+                let percentY = (coords.y / window.innerHeight) * 100;
+                cursorElement.style.left = Math.min(98, Math.max(0, percentX)) + "%";
+                cursorElement.style.top = Math.min(98, Math.max(0, percentY)) + "%";
+            }, 800);
+        }
+
+        function populateAdminUserDirectoryListTable() {
+            let container = document.getElementById('admin-user-directory-table-list');
+            container.innerHTML = "";
+            let foundAny = false;
+            
+            let table = document.createElement('table');
+            table.style.width = "100%";
+            table.style.borderCollapse = "collapse";
+            table.innerHTML = `
+                <thead>
+                    <tr style="text-align:left; border-bottom:2px solid var(--wood); font-weight:bold;">
+
+                        <th style="padding:6px;">Username</th>
+                        <th style="padding:6px;">Classification</th>
+                        <th style="padding:6px;">Calculated Age</th>
+                        <th style="padding:6px;">Role Rank</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            `;
+            let tbody = table.querySelector('tbody');
+
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key.startsWith('user_')) {
+                    foundAny = true;
+                    let userData = JSON.parse(localStorage.getItem(key));
+                    let tr = document.createElement('tr');
+                    tr.style.borderBottom = "1px solid #ddd";
+                    tr.innerHTML = `
+
+                        <td style="padding:6px; font-weight:bold; color:var(--bsa-blue); cursor:pointer;" onclick="document.getElementById('owner-surveillance-target-input').value='${userData.username}'; engageActiveTargetMonitoring();">${userData.username}</td>
+                        <td style="padding:6px; text-transform:uppercase;">${userData.type}</td>
+                        <td style="padding:6px;">${userData.age || 'Unknown'} yrs</td>
+                        <td style="padding:6px;">${userData.isAdmin ? 'Junior Admin' : 'Standard Member'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            }
+
+            if (!foundAny) {
+                container.innerText = "No registered secondary member profiles discovered within local storage nodes.";
+            } else {
+                container.appendChild(table);
+            }
+        }
+
+        function renderIncomingAppealsLogsInPanel() {
+            let container = document.getElementById('admin-appeals-feed-container'); container.innerHTML = "";
+            let list = JSON.parse(localStorage.getItem('portal_appeals_buffer') || "[]");
+
+            if (list.length === 0) { container.innerText = "Appeals data feed pristine. No entries."; return; }
+            list.forEach(item => {
+                let div = document.createElement('div'); div.style.borderBottom = "1px dashed #333"; div.style.padding = "4px 0";
+                div.innerHTML = `<span style="color:var(--gold);">[${item.timestamp}]</span> <strong>@${item.user}:</strong> ${item.reason}`;
+                container.appendChild(div);
+            });
+        }
+
+        function executeAdminLevelToggle(action) {
+            let target = document.getElementById('owner-action-user').value.trim(); if(!target) return;
+            let key = "user_" + target; let raw = localStorage.getItem(key); if(!raw) return;
+            let parsed = JSON.parse(raw); parsed.isAdmin = (action === 'grant');
+            localStorage.setItem(key, JSON.stringify(parsed)); 
+            populateAdminUserDirectoryListTable();
+            triggerCustomPopupModalCard("Privileges Adjusted", "User rank tracking credentials adjusted.");
+        }
+
+        function parseCustomBantimeStringToMs(input) {
+            let num = parseFloat(input); if (isNaN(num)) return 10 * 60 * 1000;
+
+            if (input.endsWith("ms")) return num; if (input.endsWith("s")) return num * 1000;
+            if (input.endsWith("mins")) return num * 60 * 1000; if (input.endsWith("hr")) return num * 60 * 60 * 1000;
+            if (input.endsWith("d")) return num * 24 * 60 * 60 * 1000; if (input.endsWith("w")) return num * 7 * 24 * 60 * 60 * 1000;
+            if (input.endsWith("mo")) return num * 30 * 24 * 60 * 60 * 1000; if (input.endsWith("yr")) return num * 365 * 24 * 60 * 60 * 1000;
+            return num * 60 * 1000;
+        }
+
+        function executeAccountEnforcement(type) {
+            let target = document.getElementById('owner-action-user').value.trim();
+            let durStr = document.getElementById('owner-action-duration-string').value.trim() || "10mins";
+            let reason = document.getElementById('owner-action-reason').value.trim() || "Policy assessment";
+            if(!target || target === 'Matty_owner') return;
+
+            if(type === 'ban') {
+                let lengthMs = parseCustomBantimeStringToMs(durStr);
+                localStorage.setItem(`ban_${target}`, JSON.stringify({ reason: reason, until: Date.now() + lengthMs }));
+                triggerCustomPopupModalCard("Enforcement Applied", `Suspension string duration applied to @${target}.`);
+            } else if(type === 'unban') {
+                localStorage.removeItem(`ban_${target}`); triggerCustomPopupModalCard("Enforcement Removed", "Ban configuration cleared.");
+
+            } else if(type === 'delete') {
+                localStorage.removeItem(`user_${target}`); 
+                populateAdminUserDirectoryListTable();
+                triggerCustomPopupModalCard("Enforcement Executed", "Account document removed.");
+            }
+        }
+
+        function renderDeletedRecoveryBinItems() {
+            let container = document.getElementById('owner-soft-delete-list-container'); container.innerHTML = "";
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key.startsWith('deleted_bin_')) {
+                    let name = key.replace('deleted_bin_', '');
+                    let div = document.createElement('div'); div.style.cssText = "display:flex; justify-content:space-between; padding:4px 0;";
+                    div.innerHTML = `<span>${name}</span><button class="mc-btn" style="padding:2px 6px;" onclick="restoreProfileFromBin('${name}')">Restore</button>`;
+                    container.appendChild(div);
+                }
+            }
+        }
+
+
+        function restoreProfileFromBin(name) {
+            let raw = localStorage.getItem(`deleted_bin_${name}`);
+            if(raw) { 
+                localStorage.setItem(`user_${name}`, JSON.stringify(JSON.parse(raw).profile)); 
+                localStorage.removeItem(`deleted_bin_${name}`); 
+                location.reload(); 
+            }
+        }
+
+        function togglePongMatchModeOptions(val) { PONG_MATCH_MODE = val; document.getElementById('pong-room-code-input').style.display = (val === 'pvp') ? "block" : "none"; }
+
+        function triggerGlobalUpdateSequence() {
+            localStorage.setItem('global_site_update_active', 'true'); let time = 180;
+            APPS_UPDATE_COUNTDOWN_INTERVAL = setInterval(() => {
+                time--; let m = Math.floor(time/60).toString().padStart(2,'0'); let s = (time%60).toString().padStart(2,'0');
+                localStorage.setItem('global_site_update_time_left', `${m}:${s}`);
+                if(time<=0) { clearInterval(APPS_UPDATE_COUNTDOWN_INTERVAL); localStorage.setItem('global_site_update_active', 'false'); }
+            }, 1000);
+        }
+
+        function terminateGlobalUpdateSequence() { clearInterval(APPS_UPDATE_COUNTDOWN_INTERVAL); localStorage.setItem('global_site_update_active', 'false'); }
+
+        function initInactivityWatchdog() { window.addEventListener('mousemove', _wR); window.addEventListener('keydown', _wR); }
+        function _wR() { clearTimeout(INACTIVITY_TIMER); INACTIVITY_TIMER = setTimeout(() => { location.reload(); }, IDLE_TIMEOUT_LIMIT); }
+
+        function navigateTo(id) {
+            document.querySelectorAll('.section-panel').forEach(s => s.classList.remove('visible'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            let p = document.getElementById(id);
+            if(p) {
+                p.classList.add('visible');
+                let link = document.getElementById("link-" + id.replace('-section', '')); if(link) link.classList.add('active');
+            }
+            document.getElementById('scout-sidebar').classList.remove('mobile-open');
+        }
+
+        function toggleMobileMenuGrid() { document.getElementById('scout-sidebar').classList.toggle('mobile-open'); }
+        function toggleDossierVault() {
+            let el = document.getElementById('more-text'); let btn = document.getElementById('dossierToggleBtn');
+
+            if(el.style.display === "none" || el.style.display === "") { el.style.display = "block"; btn.innerText = "Close About Us Vault"; } 
+            else { el.style.display = "none"; btn.innerText = "Open About Us Vault"; }
+        }
+
+        let activePage = 1;
+        function cycleGallery(dir) {
+            activePage += dir; if(activePage < 1) activePage = 15; if(activePage > 15) activePage = 1;
+            document.getElementById('galleryImage').src = `images/photo${activePage}.png`;
+            document.getElementById('galleryPageIndicator').innerText = `Page ${activePage} / 15`;
+            document.getElementById('galleryCaption').innerText = `Photo ${activePage}: Troop Album`;
+        }
+
+        const CONTEXTUAL_DICTIONARY = {
+            "hello": "Greetings helper! How can we start working on your badges today?",
+            "hi": "Hello member! How can we start your next advancement track?",
+            "oath": "The Scout Oath: On my honor I will do my best to do my duty to God and my country and to obey the Scout Law...",
+            "law": "The Scout Law: A Scout is trustworthy, loyal, helpful, friendly, courteous, kind, obedient, cheerful...",
+            "motto": "The Scout Motto is: BE PREPARED. It means you are always ready in mind and body to handle your tasks safely.",
+            "slogan": "The Scout Slogan is: DO A GOOD TURN DAILY. It serves as a reminder to help others without being asked.",
+            "67": "yooo sup lil bro i have max jawline and aura"
+
+        };
+
+        function _renderAiInitialGreetingMessage() { appendMessageToTerminalFlow('bot', "Greetings helper! How can we start working on your badges today?"); }
+
+        function appendMessageToTerminalFlow(author, text) {
+            let log = document.getElementById('aiChatLog'); let msg = document.createElement('div');
+            msg.className = "ai-message " + (author === 'user' ? 'ai-msg-user' : 'ai-msg-bot');
+            msg.innerText = text; log.appendChild(msg); log.scrollTop = log.scrollHeight;
+        }
+
+        function _0x610c() {
+            let field = document.getElementById('aiTerminalInput'); let q = field.value.trim(); if(!q) return;
+            appendMessageToTerminalFlow('user', q); field.value = "";
+            
+            setTimeout(() => {
+                let norm = q.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ");
+                let reply = "";
+                if (CONTEXTUAL_DICTIONARY[norm]) { reply = CONTEXTUAL_DICTIONARY[norm]; } 
+                else {
+
+                    let words = norm.split(" "); let found = false;
+                    for(let w of words) { if(CONTEXTUAL_DICTIONARY[w]) { reply = CONTEXTUAL_DICTIONARY[w]; found = true; break; } }
+                    if(!found) reply = "I haven't learned that specific troop detail yet, but I've saved it so the team can look into it!";
+                }
+                appendMessageToTerminalFlow('bot', reply);
+            }, 500);
+        }
+
+        /* PONG PHYSICS */
+        let gameActive = false, ball = { x:0, y:0, sx:4, sy:3 }, padd = { uY:140, aY:140 }, scores = { p:0, a:0 }, keys = {};
+        function launchReflexGame() {
+            document.getElementById('game-overlay').style.display = "none";
+            let arena = document.getElementById('pong-arena'); ball.x = arena.clientWidth / 2; ball.y = 180;
+            if(!gameActive) {
+                gameActive = true;
+                window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+                window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+                requestAnimationFrame(_tick);
+            }
+
+        }
+
+        function _tick() {
+            if(!gameActive) return; let h = 360, w = document.getElementById('pong-arena').clientWidth;
+            if(keys['w'] || keys['arrowup']) padd.uY = Math.max(0, padd.uY - 5);
+            if(keys['s'] || keys['arrowdown']) padd.uY = Math.min(h - 80, padd.uY + 5);
+
+            if(PONG_MATCH_MODE === "ai") {
+                let aiCenter = padd.aY + 40, ballCenter = ball.y + 12;
+                let simulatedHumanMistakeWindow = Math.sin(Date.now() / 600) * 18;
+                if(ball.sx > 0) { 
+                    padd.aY += (aiCenter < ballCenter + simulatedHumanMistakeWindow) ? 3.2 : -3.5; 
+                    padd.aY = Math.max(0, Math.min(h - 80, padd.aY)); 
+                }
+            }
+
+            ball.x += ball.sx; ball.y += ball.sy;
+            if(ball.y <= 0 || ball.y >= h - 24) ball.sy *= -1;
+
+
+            if(ball.x <= 30 && ball.y + 24 >= padd.uY && ball.y <= padd.uY + 80) { ball.sx = Math.abs(ball.sx) * 1.04; ball.x = 31; }
+            if(ball.x >= w - 46 && ball.y + 24 >= padd.aY && ball.y <= padd.aY + 80) { ball.sx = -Math.abs(ball.sx) * 1.04; ball.x = w - 47; }
+
+            if(ball.x < 0) { scores.a++; _resetBall(w); } else if(ball.x > w) { scores.p++; _resetBall(w); }
+
+            document.getElementById('score-player').innerText = scores.p; document.getElementById('score-ai').innerText = scores.a;
+            document.getElementById('pong-paddle-user').style.top = padd.uY + "px"; document.getElementById('pong-paddle-ai').style.top = padd.aY + "px";
+            document.getElementById('ball').style.left = ball.x + "px"; document.getElementById('ball').style.top = ball.y + "px";
+            if(scores.p >= 10 || scores.a >= 10) { gameActive = false; document.getElementById('game-overlay').style.display = "flex"; }
+            else requestAnimationFrame(_tick);
+        }
+
+        function syncPvPPongCoordinatesEngine() {
+            let code = document.getElementById('pong-room-code-input').value.trim(); if(!code) return;
+            localStorage.setItem(`pong_paddle_${code}_${ACTIVE_USER_STATE.username}`, padd.uY);
+            for(let i=0; i<localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if(key.startsWith(`pong_paddle_${code}_`) && !key.endsWith(ACTIVE_USER_STATE.username)) {
+                    padd.aY = parseFloat(localStorage.getItem(key)) || 140;
+
+                }
+            }
+        }
+
+        function _0x63da() {
+            let last = localStorage.getItem('last_dual_server_ping_timestamp');
+            if(!last || (Date.now() - last > 3 * 24 * 60 * 60 * 1000)) {
+                atob(OBFUSCATED_DB_URL); atob(OBFUSCATED_R2_ENDPOINT);
+                localStorage.setItem('last_dual_server_ping_timestamp', Date.now());
+            }
+        }
+
+        function _0x739a() {
+            _0x63da();
+            let last = localStorage.getItem('last_portal_backup_timestamp');
+            if(!last || (Date.now() - last > 5 * 24 * 60 * 60 * 1000)) {
+                let html = document.documentElement.outerHTML;
+                let b64 = btoa(unescape(encodeURIComponent(html))).substr(0, 200);
+                let bin = ""; for (let i = 0; i < 10; i++) { bin += Math.random() > 0.5 ? "1" : "0"; }
+
+                atob(OBFUSCATED_R2_ENDPOINT);
+                localStorage.setItem("portal_backup_layer_b64_new", b64);
+                localStorage.setItem("portal_backup_layer_bin_new", bin);
+                localStorage.setItem('last_portal_backup_timestamp', Date.now());
+            }
+        }
+
+        function _resetBall(w) { ball.x = w / 2; ball.y = 180; ball.sx = ball.sx > 0 ? -4 : 4; }
+        document.addEventListener('DOMContentLoaded', () => { acceptLegalTerms(); _0x739a(); });
+    </script>
+    <script async src="https://googlesyndication.com" crossorigin="anonymous"></script>
+    <!-- Custom Confirmation Modal -->
+<div id="custom-confirm-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <h3 id="modal-title">Leaving Troop Portal</h3>
+    <p>You are about to securely leave our Troop portal view to open the official National BSA website registration panel. Proceed to their portal link?</p>
+    <div class="modal-actions">
+      <button id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+      <button id="modal-confirm-btn" class="btn btn-primary">Proceed</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
