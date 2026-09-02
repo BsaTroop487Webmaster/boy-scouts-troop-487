@@ -750,7 +750,7 @@ async function _0x5a21() {
     }
 }
 
-            if (user === "Matty_owner" && pass === "MoldyToezWaffle123") {
+            /*if (user === "Matty_owner" && pass === "MoldyToezWaffle123") {
                 let owner = { username: "Matty_owner", type: "owner", rank: "System Master Administrator", isAdmin: true, age: 99 };
                 document.getElementById('link-owner').style.display = "block";
                 owner.sessionSecureToken = _0x1c4a(pass); _0x293d(owner); return;
@@ -771,7 +771,7 @@ async function _0x5a21() {
                 parsed.sessionSecureToken = _0x1c4a(pass); _0x293d(parsed);
 
             } else { triggerCustomPopupModalCard("Login Failure", "Incorrect username or password. Please verify your keys and credentials."); }
-        }
+        }*/
 
         async function _0x3f12() {
     let user = document.getElementById('reg-user').value.trim();
@@ -981,7 +981,8 @@ To keep things safe and family-friendly, all posts, chat rooms, and user activit
     let text = box.value.trim();
     if(!text && !ATTACHED_IMAGE_BASE64_CACHE) return;
     
-    const result = await firebasePostChatMessage(ACTIVE_USER_STATE.uid, ACTIVE_USER_STATE.username, text, ATTACHED_IMAGE_BASE64_CACHE);
+    const uid = auth.currentUser?.uid || ACTIVE_USER_STATE.uid || "unknown";
+const result = await firebasePostChatMessage(uid, ACTIVE_USER_STATE.username, text, ATTACHED_IMAGE_BASE64_CACHE);
     if (result.success) {
         box.value = "";
         ATTACHED_IMAGE_BASE64_CACHE = null;
