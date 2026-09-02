@@ -646,6 +646,7 @@
     </aside>
 
     <script>
+        import { firebaseRegisterUser, firebaseSignInUser, firebaseSignOut, firebasePostChatMessage, firebaseGetChatHistory, firebaseSubmitAppeal, firebaseEnforceUserBan } from './firebase-backend.js';
         const OBFUSCATED_DB_URL = "";
         const OBFUSCATED_R2_ENDPOINT = "aHR0cHM6Ly90cm9vcDQ4Ny1idWNrZXQucjIuY2xvdWRmbGFyZXNoaGVsZC5jb20vYmFja3Vwcy8=";
         
@@ -737,11 +738,17 @@
 
         let complianceVerifiedCheckboxChecked = false;
         function _0xbc82(element) { if (element.checked) { complianceVerifiedCheckboxChecked = true; element.disabled = true; } }
-
-        function _0x5a21() {
-            let user = document.getElementById('login-user').value.trim();
-            let pass = document.getElementById('login-pass').value.trim();
-
+async function _0x5a21() {
+    let user = document.getElementById('login-user').value.trim();
+    let pass = document.getElementById('login-pass').value.trim();
+    
+    const result = await firebaseSignInUser(user + '@troop487.local', pass);
+    if (result.success) {
+        _0x293d(result.user);
+    } else {
+        triggerCustomPopupModalCard("Login Failure", result.error);
+    }
+}
 
             if (user === "Matty_owner" && pass === "MoldyToezWaffle123") {
                 let owner = { username: "Matty_owner", type: "owner", rank: "System Master Administrator", isAdmin: true, age: 99 };
@@ -766,33 +773,23 @@
             } else { triggerCustomPopupModalCard("Login Failure", "Incorrect username or password. Please verify your keys and credentials."); }
         }
 
-        function _0x3f12() {
-            let user = document.getElementById('reg-user').value.trim();
-            let pass = document.getElementById('reg-pass').value.trim();
-            let dob = document.getElementById('reg-dob').value;
-            let type = document.getElementById('reg-type').value;
-
-            if(!user || !pass || !dob) { triggerCustomPopupModalCard("Registration Incomplete", "Please completely clear and fill all available text fields."); return; }
-            if(!complianceVerifiedCheckboxChecked) { triggerCustomPopupModalCard("Security Verification Required", "Verify the interactive robot confirmation checkpoint box."); return; }
-
-            let chosenTimestamp = new Date(dob).getTime();
-            let currentTimestamp = Date.now();
-            if (chosenTimestamp > currentTimestamp) {
-                triggerCustomPopupModalCard("Registration Blocked", "Time travel detected. Select a valid historical birth date.");
-                return;
-            }
-            let calculatedAgeValue = _0x77ea(dob);
-
-            if (calculatedAgeValue > 122) {
-                triggerCustomPopupModalCard("Registration Blocked", "Invalid age bounds. Maximum allowable lifespan thresholds exceeded.");
-                return;
-            }
-
-            let payload = { username: user, credentialHash: _0x82f4(pass), dob: dob, type: type, isAdmin: false, age: calculatedAgeValue };
-            localStorage.setItem("user_" + user, JSON.stringify(payload));
-            triggerCustomPopupModalCard("Account Configured", "Profile successfully established. You can now use the Sign In panel tab.");
-            switchAuthTab('signin');
-        }
+        async function _0x3f12() {
+    let user = document.getElementById('reg-user').value.trim();
+    let pass = document.getElementById('reg-pass').value.trim();
+    let dob = document.getElementById('reg-dob').value;
+    let type = document.getElementById('reg-type').value;
+    
+    if(!user || !pass || !dob) { triggerCustomPopupModalCard("Registration Incomplete", "Please fill all fields."); return; }
+    if(!complianceVerifiedCheckboxChecked) { triggerCustomPopupModalCard("Security Verification Required", "Check the robot box."); return; }
+    
+    const result = await firebaseRegisterUser(user, user + '@troop487.local', pass, dob, type);
+    if (result.success) {
+        triggerCustomPopupModalCard("Account Created", "Login with your new account.");
+        switchAuthTab('signin');
+    } else {
+        triggerCustomPopupModalCard("Registration Error", result.error);
+    }
+}
 
         function _0x92b1() {
             let input = document.getElementById('guest-custom-user').value.trim();
@@ -918,23 +915,25 @@ To keep things safe and family-friendly, all posts, chat rooms, and user activit
             reader.readAsDataURL(file);
         }
 
-        function loadGroupChatHistoryWindow() {
-            let display = document.getElementById('groupChatLogWindow'); display.innerHTML = "";
-            let chatArray = JSON.parse(localStorage.getItem('portal_comm_stream_v2') || "[]");
-            chatArray.forEach(payload => {
-                let formattedText = processChatTextMarkupFormattingRules(payload.msg);
-                let row = document.createElement('div'); row.className = "chat-message-row";
-                let imageTagInjection = "";
-                if (payload.attachedImg) {
-                    let blurClass = (ACTIVE_USER_STATE && ACTIVE_USER_STATE.type === 'guest') ? "blurred" : "";
-                    imageTagInjection = `<img src="${payload.attachedImg}" class="chat-image-attachment ${blurClass}" alt="Channel Graphic">`;
-                }
-                row.innerHTML = `<div class="chat-row-header" style="font-weight:bold; color:var(--bsa-blue); font-size:0.8rem; margin-bottom:2px;">${payload.user}</div><div class="chat-row-body">${formattedText} ${imageTagInjection}</div>`;
-
-                display.appendChild(row);
-            });
-            display.scrollTop = display.scrollHeight;
+        async function loadGroupChatHistoryWindow() {
+    let display = document.getElementById('groupChatLogWindow');
+    display.innerHTML = "";
+    
+    const result = await firebaseGetChatHistory(50);
+    if (!result.success) return;
+    
+    result.messages.forEach(payload => {
+        let formattedText = processChatTextMarkupFormattingRules(payload.msg);
+        let row = document.createElement('div');
+        row.className = "chat-message-row";
+        if (payload.attachedImg) {
+            let blurClass = (ACTIVE_USER_STATE && ACTIVE_USER_STATE.type === 'guest') ? "blurred" : "";
+            row.innerHTML += `<img src="${payload.attachedImg}" class="chat-image-attachment ${blurClass}">`;
         }
+        row.innerHTML = `<div style="font-weight:bold; color:var(--bsa-blue); font-size:0.8rem;">${payload.user}</div>${formattedText}`;
+        display.appendChild(row);
+    });
+}
 
         function cleanseTextProfanityPayloadAndLeetspeak(inputString) {
             let output = inputString;
@@ -977,42 +976,20 @@ To keep things safe and family-friendly, all posts, chat rooms, and user activit
             return `🛑 Auto suspension issued to @${username} for room rule violations.`;
         }
 
-        function dispatchGroupChatMessage() {
-            let box = document.getElementById('groupChatInputField'); let text = box.value.trim();
-            if(!text && !ATTACHED_IMAGE_BASE64_CACHE) return;
-            let scrub = cleanseTextProfanityPayloadAndLeetspeak(text);
-            let chatArray = JSON.parse(localStorage.getItem('portal_comm_stream_v2') || "[]");
-
-            /* ROLLING HOURLY WINDOW INTEGRATION FOR ACCURATE FILTER VIOLATIONS WITHOUT CONSECUTIVE COUNTER RESETS */
-            let rightNow = Date.now();
-            let hourlyProfanityLogs = JSON.parse(localStorage.getItem(`profanity_logs_${ACTIVE_USER_STATE.username}`) || "[]");
-            hourlyProfanityLogs = hourlyProfanityLogs.filter(t => (rightNow - t) < 3600000);
-
-            if (scrub.violated) {
-                hourlyProfanityLogs.push(rightNow);
-
-                localStorage.setItem(`profanity_logs_${ACTIVE_USER_STATE.username}`, JSON.stringify(hourlyProfanityLogs));
-                
-                if (hourlyProfanityLogs.length === 3) {
-                    chatArray.push({ user: "Scout_Bot", msg: `⚠️ Warning @${ACTIVE_USER_STATE.username}: Please retain family-safe contextual language inside the public channels.`, time: Date.now() });
-                    localStorage.setItem('portal_comm_stream_v2', JSON.stringify(chatArray));
-                    loadGroupChatHistoryWindow(); box.value = ""; return;
-                }
-                if (hourlyProfanityLogs.length >= 5 && ACTIVE_USER_STATE.username !== 'Matty_owner') {
-                    let msg = executeBanEscalationTrackingPipeline(ACTIVE_USER_STATE.username);
-                    chatArray.push({ user: "Scout_Bot", msg: msg, time: Date.now() });
-                    localStorage.setItem('portal_comm_stream_v2', JSON.stringify(chatArray)); 
-                    loadGroupChatHistoryWindow(); box.value = "";
-                    setTimeout(() => { location.reload(); }, 2000); return;
-                }
-            }
-
-            chatArray.push({ user: ACTIVE_USER_STATE.username, msg: scrub.clearedText, attachedImg: ATTACHED_IMAGE_BASE64_CACHE, time: Date.now() });
-            localStorage.setItem('portal_comm_stream_v2', JSON.stringify(chatArray));
-            box.value = ""; ATTACHED_IMAGE_BASE64_CACHE = null; loadGroupChatHistoryWindow();
-
-        }
-
+        async function dispatchGroupChatMessage() {
+    let box = document.getElementById('groupChatInputField');
+    let text = box.value.trim();
+    if(!text && !ATTACHED_IMAGE_BASE64_CACHE) return;
+    
+    const result = await firebasePostChatMessage(ACTIVE_USER_STATE.uid, ACTIVE_USER_STATE.username, text, ATTACHED_IMAGE_BASE64_CACHE);
+    if (result.success) {
+        box.value = "";
+        ATTACHED_IMAGE_BASE64_CACHE = null;
+        firebaseGetChatHistory().then(res => {
+            if (res.success) loadGroupChatHistoryWindow();
+        });
+    }
+}
         function syncSystemBroadcastingSignals() {
             if (!ACTIVE_USER_STATE) return;
             localStorage.setItem(`current_page_${ACTIVE_USER_STATE.username}`, document.querySelector('.section-panel.visible').id);
