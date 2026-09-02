@@ -646,7 +646,8 @@
     </aside>
 
     <script>
-        import { firebaseRegisterUser, firebaseSignInUser, firebaseSignOut, firebasePostChatMessage, firebaseGetChatHistory, firebaseSubmitAppeal, firebaseEnforceUserBan } from './firebase-backend.js';
+// Firebase imports at top of script
+const { firebaseRegisterUser, firebaseSignInUser, firebaseSignOut, firebasePostChatMessage, firebaseGetChatHistory, firebaseSubmitAppeal, firebaseEnforceUserBan } = await import('./firebase-backend.js');
         const OBFUSCATED_DB_URL = "";
         const OBFUSCATED_R2_ENDPOINT = "aHR0cHM6Ly90cm9vcDQ4Ny1idWNrZXQucjIuY2xvdWRmbGFyZXNoaGVsZC5jb20vYmFja3Vwcy8=";
         
